@@ -1,7 +1,3 @@
-import jsonrpclib
-
-server = jsonrpclib.Server('http://localhost:8080/jsonrpc')
-
 def safeGet(d, k, v):
 	if d == None:
 		return v
@@ -12,22 +8,63 @@ def safeGet(d, k, v):
 	else:
 		return vv
 
-def getSources():
-	result = server.Files.GetSources(media="video")
-	return safeGet(result, "sources", [])
+try:
+	import xbmc
+	import json
+	import uuid
 
-def getDirectory(directory):
-	result = server.Files.GetDirectory(directory)
-	return safeGet(result, "files", [])
+	def doXBMCRequest(method, *args, **kwargs):
+		params = None
 
-def getMovies(properties):
-	result = server.VideoLibrary.GetMovies(properties=properties)
-	return safeGet(result, "movies", [])
+		if len(args):
+			params = args
+		else:
+			params = kwargs
 
-def getEpisodes(properties):
-	result = server.VideoLibrary.GetEpisodes(properties=properties)
-	return safeGet(result, "episodes", [])
+		request = { "jsonrpc": "2.0", "method": method, "params": params, "id": str(uuid.uuid1()) }
+		response = json.loads(xbmc.executeJSONRPC(json.dumps(request)))
+		return response.get("result", None)
 
-def getTVShows(properties):
-	result = server.VideoLibrary.GetTVShows(properties=properties)
-	return safeGet(result, "tvshows", [])
+	def getSources():
+		result = doXBMCRequest("Files.GetSources", media="video")
+		return safeGet(result, "sources", [])
+
+	def getDirectory(directory):
+		result = doXBMCRequest("Files.GetDirectory", directory)
+		return safeGet(result, "files", [])
+
+	def getMovies(properties):
+		result = doXBMCRequest("VideoLibrary.GetMovies", properties=properties)
+		return safeGet(result, "movies", [])
+
+	def getEpisodes(properties):
+		result = doXBMCRequest("VideoLibrary.GetEpisodes", properties=properties)
+		return safeGet(result, "episodes", [])
+
+	def getTVShows(properties):
+		result = doXBMCRequest("VideoLibrary.GetTVShows", properties=properties)
+		return safeGet(result, "tvshows", [])
+except:
+	import jsonrpclib
+
+	server = jsonrpclib.Server('http://localhost:8080/jsonrpc')
+
+	def getSources():
+		result = server.Files.GetSources(media="video")
+		return safeGet(result, "sources", [])
+
+	def getDirectory(directory):
+		result = server.Files.GetDirectory(directory)
+		return safeGet(result, "files", [])
+
+	def getMovies(properties):
+		result = server.VideoLibrary.GetMovies(properties=properties)
+		return safeGet(result, "movies", [])
+
+	def getEpisodes(properties):
+		result = server.VideoLibrary.GetEpisodes(properties=properties)
+		return safeGet(result, "episodes", [])
+
+	def getTVShows(properties):
+		result = server.VideoLibrary.GetTVShows(properties=properties)
+		return safeGet(result, "tvshows", [])
