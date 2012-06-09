@@ -43,7 +43,8 @@ def extractEpisodes(files, onProgress, isInterrupted):
 	result = getTVShows(show_properties)
 
 	for show in result:
-		tvshows[show["tvshowid"]] = show["title"]
+		if "title" in show:
+			tvshows[show["tvshowid"]] = show["title"]
 
 	result = getEpisodes(episode_properties)
 
@@ -59,15 +60,16 @@ def extractEpisodes(files, onProgress, isInterrupted):
 		path = removeFromStackAndRecurse(e["file"])
 		files.add(path)
 
-		episode = {
-			"file": path,
-			"tvshow_title": tvshows[e["tvshowid"]],
-			"episode_title": e["title"],
-			"season": e["season"],
-			"episode": e["episode"]
-		}
+		if "tvshowid" in e and "title" in e and "season" in e and "episode" in e and e["tvshowid"] in tvshows:
+			episode = {
+				"file": path,
+				"tvshow_title": tvshows[e["tvshowid"]],
+				"episode_title": e["title"],
+				"season": e["season"],
+				"episode": e["episode"]
+			}
 
-		episodes.append(episode)
+			episodes.append(episode)
 
 		if isInterrupted():
 			break
@@ -90,15 +92,16 @@ def extractMovies(files, onProgress, isInterrupted):
 		path = removeFromStackAndRecurse(m["file"])
 		files.add(path)
 
-		movie = {
-			"file": path,
-			"title": m["title"],
-			"year": m["year"],
-			"imdb": m["imdbnumber"],
-			"runtime": m["runtime"]
-		}
+		if "title" in m and "year" in m and "imdbnumber" in m and "runtime" in m:
+			movie = {
+				"file": path,
+				"title": m["title"],
+				"year": m["year"],
+				"imdb": m["imdbnumber"],
+				"runtime": m["runtime"]
+			}
 
-		movies.append(movie)
+			movies.append(movie)
 
 		if isInterrupted():
 			break
