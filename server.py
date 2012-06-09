@@ -12,7 +12,7 @@ def post(address, d):
 		"User-Agent": "xbmc-gsoc2012-statistics", # otherwise it uses "Python-urllib/..."
 	}
 
-	req = urllib2.Request(address, headers = h, data = d)
+	req = urllib2.Request(address, headers = h, data = d, timeout = 10)
 
 	f = urllib2.urlopen(req)
 
