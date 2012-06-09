@@ -1,24 +1,8 @@
 import xbmc, xbmcgui
 from xbmcjsonrpc import getSources
 import extraction
+import server
 import string
-import urllib2
-import json
-
-server_base_address = "http://127.0.0.1:8000"
-
-def post(address, d):
-	h = {
-		"Content-Type": "application/json",
-
-		# Some extra headers for fun
-		"Accept": "*/*",   # curl does this
-		"User-Agent": "xbmc-gsoc2012-statistics", # otherwise it uses "Python-urllib/..."
-	}
-
-	req = urllib2.Request(address, headers = h, data = d)
-
-	f = urllib2.urlopen(req)
 
 class SubmitState(object):
 	def __init__(self, episodes, movies, videoFiles):
@@ -35,17 +19,17 @@ class SubmitState(object):
 			ret = progress.create('GSoC 2012', 'Initializing upload...', "")
 
 			progress.update(1, "Uploading episodes")
-			post(server_base_address + "/episodes", json.dumps(self.episodes))
+			server.uploadMedia("episode", self.episodes)
 			if progress.iscanceled():
 				return
 
 			progress.update(34, "Uploading movies")
-			post(server_base_address + "/movies", json.dumps(self.movies))
+			server.uploadMedia("movies", self.movies)
 			if progress.iscanceled():
 				return
 
 			progress.update(67, "Uploading unscraped video files")
-			post(server_base_address + "/videofiles", json.dumps(self.videoFiles))
+			server.uploadMedia("videofiles", self.videoFiles)
 
 			progress.update(100)
 			progress.close()
