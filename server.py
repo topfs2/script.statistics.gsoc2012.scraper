@@ -12,9 +12,9 @@ def post(address, d):
 		"User-Agent": "xbmc-gsoc2012-statistics", # otherwise it uses "Python-urllib/..."
 	}
 
-	req = urllib2.Request(address, headers = h, data = d, timeout = 10)
+	req = urllib2.Request(address, headers = h, data = d)
 
-	f = urllib2.urlopen(req)
+	f = urllib2.urlopen(req, timeout = 10)
 
 def uploadMedia(media, data):
 	post(server_base_address + "/" + media, json.dumps(data))
