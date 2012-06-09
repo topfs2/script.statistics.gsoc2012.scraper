@@ -1,7 +1,7 @@
 import urllib2
 import json
 
-server_base_address = "http://127.0.0.1:8000"
+server_base_address = "http://50.57.179.9"
 
 def post(address, d):
 	h = {
