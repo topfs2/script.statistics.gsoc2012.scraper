@@ -19,7 +19,7 @@ class SubmitState(object):
 			ret = progress.create('GSoC 2012', 'Initializing upload...', "")
 
 			progress.update(1, "Uploading episodes")
-			server.uploadMedia("episode", self.episodes)
+			server.uploadMedia("episodes", self.episodes)
 			if progress.iscanceled():
 				return
 
