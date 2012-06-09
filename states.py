@@ -4,6 +4,12 @@ import extraction
 import server
 import string
 
+def chunks(l, n):
+    """ Yield successive n-sized chunks from l.
+    """
+    for i in xrange(0, len(l), n):
+        yield l[i:i+n]
+
 class SubmitState(object):
 	def __init__(self, episodes, movies, videoFiles):
 		self.episodes = episodes
@@ -15,21 +21,33 @@ class SubmitState(object):
 		ret = dialog.yesno('Submit?', '{0} episodes'.format(len(self.episodes)), '{0} movies'.format(len(self.movies)), '{0} video files'.format(len(self.videoFiles)))
 
 		if ret:
+			chunksize = 20
+			percentage = 0
+			total = len(self.episodes) + len(self.movies) + len(self.videoFiles)
+
 			progress = xbmcgui.DialogProgress()
 			ret = progress.create('GSoC 2012', 'Initializing upload...', "")
 
-			progress.update(1, "Uploading episodes")
-			server.uploadMedia("episodes", self.episodes)
-			if progress.iscanceled():
-				return
+			for m in chunks(self.episodes, chunksize):
+				server.uploadMedia("episodes", m)
+				progress.update((percentage * 100) / total, "Uploading episodes")
+				percentage += chunksize
+				if progress.iscanceled():
+					return
 
-			progress.update(34, "Uploading movies")
-			server.uploadMedia("movies", self.movies)
-			if progress.iscanceled():
-				return
+			for m in chunks(self.movies, chunksize):
+				server.uploadMedia("movies", m)
+				progress.update((percentage * 100) / total, "Uploading movies")
+				percentage += chunksize
+				if progress.iscanceled():
+					return
 
-			progress.update(67, "Uploading unscraped video files")
-			server.uploadMedia("videofiles", self.videoFiles)
+			for m in chunks(self.videoFiles, chunksize):
+				server.uploadMedia("videofiles", m)
+				progress.update((percentage * 100) / total, "Uploading unscraped video files")
+				percentage += chunksize
+				if progress.iscanceled():
+					return
 
 			progress.update(100)
 			progress.close()
