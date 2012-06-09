@@ -8,5 +8,5 @@ ACTION_PREVIOUS_MENU = 10
 
 sm = state.StateManager()
 
-sm.switchTo(states.InitialWindow())
+sm.switchTo(states.CheckServerState())
 sm.doModal()

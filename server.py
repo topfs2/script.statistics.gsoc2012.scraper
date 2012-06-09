@@ -18,3 +18,13 @@ def post(address, d):
 
 def uploadMedia(media, data):
 	post(server_base_address + "/" + media, json.dumps(data))
+
+def serverActive():
+	try:
+		ret = urllib2.urlopen(server_base_address + "/active", timeout = 2)
+		if ret == None:
+			return False
+		else:
+			return json.load(ret)
+	except:
+		return False

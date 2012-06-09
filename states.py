@@ -135,3 +135,14 @@ class InitialWindow(xbmcgui.Window):
 		if control is self.gather:
 			steps = [self.choiceID[self.choiceButton.index(b)] for b in self.choiceButton if b.isSelected()]
 			self.sm.switchTo(GatherState(steps))
+
+class CheckServerState(object):
+	def doModal(self):
+		if server.serverActive():
+			self.sm.switchTo(InitialWindow())
+		else:
+			dialog = xbmcgui.Dialog()
+			dialog.ok('Server down', "The statistics server seems to be down")
+
+	def close(self):
+		pass
