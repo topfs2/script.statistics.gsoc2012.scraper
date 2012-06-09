@@ -5,6 +5,8 @@ import string
 import urllib2
 import json
 
+server_base_address = "http://127.0.0.1:8000"
+
 def post(address, d):
 	h = {
 		"Content-Type": "application/json",
@@ -33,17 +35,17 @@ class SubmitState(object):
 			ret = progress.create('GSoC 2012', 'Initializing upload...', "")
 
 			progress.update(1, "Uploading episodes")
-			post("http://127.0.0.1:8000/episodes", json.dumps(self.episodes))
+			post(server_base_address + "/episodes", json.dumps(self.episodes))
 			if progress.iscanceled():
 				return
 
 			progress.update(34, "Uploading movies")
-			post("http://127.0.0.1:8000/movies", json.dumps(self.movies))
+			post(server_base_address + "/movies", json.dumps(self.movies))
 			if progress.iscanceled():
 				return
 
 			progress.update(67, "Uploading unscraped video files")
-			post("http://127.0.0.1:8000/videofiles", json.dumps(self.videoFiles))
+			post(server_base_address + "/videofiles", json.dumps(self.videoFiles))
 
 			progress.update(100)
 			progress.close()
