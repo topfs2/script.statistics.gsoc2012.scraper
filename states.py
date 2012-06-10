@@ -71,29 +71,29 @@ class GatherState(object):
 	def doModal(self):
 		ret = self.gatherDialog.create('GSoC 2012', 'Initializing extractors...', "")
 
+		episodes = list()
+		movies = list()
+		musicVideos = list()
+		videoFiles = list()
+
 		try:
 			self.steps = len(self.extractionSteps)
 			files = set()
-
-			episodes = list()
 			if "episodes" in self.extractionSteps:
 				def episodeProgress(percentage):
 					self.gatherDialog.update(percentage / self.steps, "Extracting episodes", "", "")
 				episodes = extraction.extractEpisodes(files, episodeProgress, self.gatherDialog.iscanceled)
 
-			movies = list()
 			if "movies" in self.extractionSteps:
 				def movieProgress(percentage):
 					self.gatherDialog.update((100 + percentage) / self.steps, "Extracting movies", "", "")
 				movies = extraction.extractMovies(files, movieProgress, self.gatherDialog.iscanceled)
 
-			musicVideos = list()
 			if "musicvideos" in self.extractionSteps:
 				def musicVideosProgress(percentage):
 					self.gatherDialog.update((100 + percentage) / self.steps, "Extracting music videos", "", "")
 				musicVideos = extraction.extractMusicVideos(files, musicVideosProgress, self.gatherDialog.iscanceled)
 
-			videoFiles = list()
 			sources = [s for s in getSources() if s["file"] in self.extractionSteps]
 			nbrSources = len(sources)
 
