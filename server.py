@@ -21,7 +21,7 @@ def uploadMedia(media, data):
 
 def serverActive():
 	try:
-		ret = urllib2.urlopen(server_base_address + "/active", timeout = 2)
+		ret = urllib2.urlopen(server_base_address + "/active", timeout = 10)
 		if ret == None:
 			return False
 		else:
