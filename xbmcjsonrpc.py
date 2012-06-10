@@ -44,6 +44,10 @@ try:
 	def getTVShows(properties):
 		result = doXBMCRequest("VideoLibrary.GetTVShows", properties=properties)
 		return safeGet(result, "tvshows", [])
+
+	def getMusicVideos(properties):
+		result = doXBMCRequest("VideoLibrary.GetMusicVideos", properties=properties)
+		return safeGet(result, "musicvideos", [])
 except:
 	import jsonrpclib
 
@@ -68,3 +72,7 @@ except:
 	def getTVShows(properties):
 		result = server.VideoLibrary.GetTVShows(properties=properties)
 		return safeGet(result, "tvshows", [])
+
+	def getMusicVideos(properties):
+		result = server.VideoLibrary.GetMusicVideos(properties=properties)
+		return safeGet(result, "musicvideos", [])

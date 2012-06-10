@@ -24,6 +24,14 @@ show_properties = [
 	"imdbnumber"
 ]
 
+music_videos_properties = [
+	"title",
+	"runtime",
+	"artist",
+	"album",
+	"file"
+]
+
 # Taken from XBMC
 m_pictureExtensions = ".png|.jpg|.jpeg|.bmp|.gif|.ico|.tif|.tiff|.tga|.pcx|.cbz|.zip|.cbr|.rar|.m3u|.dng|.nef|.cr2|.crw|.orf|.arw|.erf|.3fr|.dcr|.x3f|.mef|.raf|.mrw|.pef|.sr2|.rss"
 m_pictureExtensions = m_pictureExtensions.split("|")
@@ -108,6 +116,38 @@ def extractMovies(files, onProgress, isInterrupted):
 
 	return movies
 
+def extractMusicVideos(files, onProgress, isInterrupted):
+# This method will fetch FILE FILE ARTIST TITLE RUNTIME from music videos in the video library
+	result = getMusicVideos(music_videos_properties)
+
+	musicVideos = list()
+	nbrMusicVideos = len(result)
+
+	for i in range(nbrMusicVideos):
+		m = result[i]
+
+		if onProgress:
+			onProgress(i * 100 / nbrMusicVideos)
+
+		path = removeFromStackAndRecurse(m["file"])
+		files.add(path)
+
+		if all([f in m for f in music_videos_properties]):
+			musicVideo = {
+				"file": path,
+				"title": m["title"],
+				"artist": m["artist"],
+				"album": m["album"],
+				"runtime": m["runtime"]
+			}
+
+			musicVideos.append(musicVideo)
+
+		if isInterrupted():
+			break
+
+	return musicVideos
+
 def getExtension(path):
 	try:
 		return path[path.rindex("."):].lower()
@@ -170,7 +210,7 @@ def main():
 	files = set()
 	episodes = extractEpisodes(files, None, isInterrupted)
 	movies = extractMovies(files, None, isInterrupted)
-
+	musicvideos = extractMusicVideos(files, None, isInterrupted)
 	videoFiles = extractVideoFiles(files, None, isInterrupted)
 
 
@@ -179,6 +219,9 @@ def main():
 
 	f = open('movies.json', 'w')
 	json.dump(movies, f, sort_keys=True, indent=4)
+
+	f = open('musicvideos.json', 'w')
+	json.dump(musicvideos, f, sort_keys=True, indent=4)
 
 	f = open('videoFiles.json', 'w')
 	json.dump(videoFiles, f, sort_keys=True, indent=4)
