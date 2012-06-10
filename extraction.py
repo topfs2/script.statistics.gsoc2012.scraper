@@ -60,7 +60,7 @@ def extractEpisodes(files, onProgress, isInterrupted):
 		path = removeFromStackAndRecurse(e["file"])
 		files.add(path)
 
-		if "tvshowid" in e and "title" in e and "season" in e and "episode" in e and e["tvshowid"] in tvshows:
+		if all([f in e for f in episode_properties]) and e["tvshowid"] in tvshows:
 			episode = {
 				"file": path,
 				"tvshow_title": tvshows[e["tvshowid"]],
@@ -92,7 +92,7 @@ def extractMovies(files, onProgress, isInterrupted):
 		path = removeFromStackAndRecurse(m["file"])
 		files.add(path)
 
-		if "title" in m and "year" in m and "imdbnumber" in m and "runtime" in m:
+		if all([f in m for f in movie_properties]):
 			movie = {
 				"file": path,
 				"title": m["title"],
