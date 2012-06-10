@@ -19,7 +19,7 @@ class SubmitState(object):
 
 	def doModal(self):
 		dialog = xbmcgui.Dialog()
-		ret = dialog.yesno('Submit?', '{0} episodes, {1} movies'.format(len(self.episodes), len(self.movies)), '{0} musicVideos, {1} video files'.format(len(self.movies), len(self.videoFiles)))
+		ret = dialog.yesno('Submit?', '{0} episodes, {1} movies'.format(len(self.episodes), len(self.movies)), '{0} musicVideos, {1} video files'.format(len(self.musicVideos), len(self.videoFiles)))
 
 		if ret:
 			chunksize = 20
