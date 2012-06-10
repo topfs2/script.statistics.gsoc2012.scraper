@@ -11,19 +11,20 @@ def chunks(l, n):
         yield l[i:i+n]
 
 class SubmitState(object):
-	def __init__(self, episodes, movies, videoFiles):
+	def __init__(self, episodes, movies, musicVideos, videoFiles):
 		self.episodes = episodes
 		self.movies = movies
+		self.musicVideos = musicVideos
 		self.videoFiles = videoFiles
 
 	def doModal(self):
 		dialog = xbmcgui.Dialog()
-		ret = dialog.yesno('Submit?', '{0} episodes'.format(len(self.episodes)), '{0} movies'.format(len(self.movies)), '{0} video files'.format(len(self.videoFiles)))
+		ret = dialog.yesno('Submit?', '{0} episodes, {1} movies'.format(len(self.episodes), len(self.movies)), '{0} musicVideos, {1} video files'.format(len(self.movies), len(self.videoFiles)))
 
 		if ret:
 			chunksize = 20
 			percentage = 0
-			total = len(self.episodes) + len(self.movies) + len(self.videoFiles)
+			total = len(self.episodes) + len(self.movies) + len(self.musicVideos) + len(self.videoFiles)
 
 			progress = xbmcgui.DialogProgress()
 			ret = progress.create('GSoC 2012', 'Initializing upload...', "")
@@ -38,6 +39,13 @@ class SubmitState(object):
 			for m in chunks(self.movies, chunksize):
 				server.uploadMedia("movies", m)
 				progress.update((percentage * 100) / total, "Uploading movies")
+				percentage += chunksize
+				if progress.iscanceled():
+					return
+
+			for m in chunks(self.musicVideos, chunksize):
+				server.uploadMedia("musicvideos", m)
+				progress.update((percentage * 100) / total, "Uploading music videos")
 				percentage += chunksize
 				if progress.iscanceled():
 					return
@@ -79,6 +87,12 @@ class GatherState(object):
 					self.gatherDialog.update((100 + percentage) / self.steps, "Extracting movies", "", "")
 				movies = extraction.extractMovies(files, movieProgress, self.gatherDialog.iscanceled)
 
+			musicVideos = list()
+			if "musicvideos" in self.extractionSteps:
+				def musicVideosProgress(percentage):
+					self.gatherDialog.update((100 + percentage) / self.steps, "Extracting music videos", "", "")
+				musicVideos = extraction.extractMusicVideos(files, musicVideosProgress, self.gatherDialog.iscanceled)
+
 			videoFiles = list()
 			sources = [s for s in getSources() if s["file"] in self.extractionSteps]
 			nbrSources = len(sources)
@@ -108,7 +122,7 @@ class GatherState(object):
 		finally:
 			self.gatherDialog.close()
 
-		self.sm.switchTo(SubmitState(episodes, movies, videoFiles))
+		self.sm.switchTo(SubmitState(episodes, movies, musicVideos, videoFiles))
 
 	def close(self):
 		pass
