@@ -12,7 +12,7 @@
 
   <extension point="xbmc.addon.metadata">
     <language></language>
-    <summary>Statistics gathering for scraping GSoC 2012. All data gather will be anonymous and contain no information about who its gathered from. The script will gather informatio about the files existing in your sources (without any passwords or usernames) and will couple that with what is scanned into the database (again no usernames or passwords). This will be posted to xbmc.org for further analysis.</summary>
+    <summary>Statistics gathering for scraping GSoC 2012. All data gather will be anonymous and contain no information about who its gathered from. The script will gather information about the files existing in your sources (without any passwords or usernames) and will couple that with what is scanned into the database (again no usernames or passwords). This will be posted to team xbmc for further analysis.</summary>
     <platform>all</platform>
   </extension>
 </addon>
