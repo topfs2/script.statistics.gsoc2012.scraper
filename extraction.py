@@ -203,29 +203,3 @@ def extractVideoFiles(files, onProgress, isInterrupted):
 			break
 
 	return videoFiles
-
-def main():
-	isInterrupted = lambda : False
-
-	files = set()
-	episodes = extractEpisodes(files, None, isInterrupted)
-	movies = extractMovies(files, None, isInterrupted)
-	musicvideos = extractMusicVideos(files, None, isInterrupted)
-	videoFiles = extractVideoFiles(files, None, isInterrupted)
-
-
-	f = open('episodes.json', 'w')
-	json.dump(episodes, f, sort_keys=True, indent=4)
-
-	f = open('movies.json', 'w')
-	json.dump(movies, f, sort_keys=True, indent=4)
-
-	f = open('musicvideos.json', 'w')
-	json.dump(musicvideos, f, sort_keys=True, indent=4)
-
-	f = open('videoFiles.json', 'w')
-	json.dump(videoFiles, f, sort_keys=True, indent=4)
-
-if __name__ == "__main__":
-	main()
-
