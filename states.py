@@ -1,8 +1,12 @@
-import xbmc, xbmcgui
+import xbmc, xbmcgui, xbmcaddon
 from xbmcjsonrpc import getSources
 import extraction
 import server
 import string
+
+
+__settings__ = xbmcaddon.Addon(id='script.statistics.gsoc.scraper')
+
 
 def chunks(l, n):
     """ Yield successive n-sized chunks from l.
@@ -19,7 +23,7 @@ class SubmitState(object):
 
 	def doModal(self):
 		dialog = xbmcgui.Dialog()
-		ret = dialog.yesno('Submit?', '{0} episodes, {1} movies'.format(len(self.episodes), len(self.movies)), '{0} musicVideos, {1} video files'.format(len(self.musicVideos), len(self.videoFiles)))
+		ret = dialog.yesno(__settings__.getLocalizedString(1), __settings__.getLocalizedString(2).format(len(self.episodes), len(self.movies)), __settings__.getLocalizedString(3).format(len(self.musicVideos), len(self.videoFiles)))
 
 		if ret:
 			chunksize = 20
@@ -27,32 +31,32 @@ class SubmitState(object):
 			total = len(self.episodes) + len(self.movies) + len(self.musicVideos) + len(self.videoFiles)
 
 			progress = xbmcgui.DialogProgress()
-			ret = progress.create('GSoC 2012', 'Initializing upload...', "")
+			ret = progress.create(__settings__.getLocalizedString(4), __settings__.getLocalizedString(5), "")
 
 			for m in chunks(self.episodes, chunksize):
 				server.uploadMedia("episodes", m)
-				progress.update((percentage * 100) / total, "Uploading episodes")
+				progress.update((percentage * 100) / total, __settings__.getLocalizedString(6))
 				percentage += chunksize
 				if progress.iscanceled():
 					return
 
 			for m in chunks(self.movies, chunksize):
 				server.uploadMedia("movies", m)
-				progress.update((percentage * 100) / total, "Uploading movies")
+				progress.update((percentage * 100) / total, __settings__.getLocalizedString(7))
 				percentage += chunksize
 				if progress.iscanceled():
 					return
 
 			for m in chunks(self.musicVideos, chunksize):
 				server.uploadMedia("musicvideos", m)
-				progress.update((percentage * 100) / total, "Uploading music videos")
+				progress.update((percentage * 100) / total, __settings__.getLocalizedString(8))
 				percentage += chunksize
 				if progress.iscanceled():
 					return
 
 			for m in chunks(self.videoFiles, chunksize):
 				server.uploadMedia("videofiles", m)
-				progress.update((percentage * 100) / total, "Uploading unscraped video files")
+				progress.update((percentage * 100) / total, __settings__.getLocalizedString(9))
 				percentage += chunksize
 				if progress.iscanceled():
 					return
@@ -69,7 +73,7 @@ class GatherState(object):
 		self.extractionSteps = extractionSteps
 
 	def doModal(self):
-		ret = self.gatherDialog.create('GSoC 2012', 'Initializing extractors...', "")
+		ret = self.gatherDialog.create(__settings__.getLocalizedString(4), __settings__.getLocalizedString(10), "")
 
 		episodes = list()
 		movies = list()
@@ -81,17 +85,17 @@ class GatherState(object):
 			files = set()
 			if "episodes" in self.extractionSteps:
 				def episodeProgress(percentage):
-					self.gatherDialog.update(percentage / self.steps, "Extracting episodes", "", "")
+					self.gatherDialog.update(percentage / self.steps, __settings__.getLocalizedString(11), "", "")
 				episodes = extraction.extractEpisodes(files, episodeProgress, self.gatherDialog.iscanceled)
 
 			if "movies" in self.extractionSteps:
 				def movieProgress(percentage):
-					self.gatherDialog.update((100 + percentage) / self.steps, "Extracting movies", "", "")
+					self.gatherDialog.update((100 + percentage) / self.steps, __settings__.getLocalizedString(12), "", "")
 				movies = extraction.extractMovies(files, movieProgress, self.gatherDialog.iscanceled)
 
 			if "musicvideos" in self.extractionSteps:
 				def musicVideosProgress(percentage):
-					self.gatherDialog.update((100 + percentage) / self.steps, "Extracting music videos", "", "")
+					self.gatherDialog.update((100 + percentage) / self.steps, __settings__.getLocalizedString(13), "", "")
 				musicVideos = extraction.extractMusicVideos(files, musicVideosProgress, self.gatherDialog.iscanceled)
 
 			sources = [s for s in getSources() if s["file"] in self.extractionSteps]
@@ -107,7 +111,7 @@ class GatherState(object):
 					s = string.join(['.' for s in range(source["tick"])])
 					offset = 200 + i * nbrSources
 
-					self.gatherDialog.update((offset + source["percentage"]) / self.steps, "Extracting unscraped videos " + s, source["label"], "")
+					self.gatherDialog.update((offset + source["percentage"]) / self.steps, __settings__.getLocalizedString(14) + s, source["label"], "")
 
 					return self.gatherDialog.iscanceled()
 
@@ -129,21 +133,21 @@ class GatherState(object):
 
 class InitialWindow(xbmcgui.Window):
 	def __init__(self):
-		self.strActionInfo = xbmcgui.ControlLabel(0, 0, 300, 200, 'Push BACK to cancel', 'font13', '0xFFFFFFFF')
+		self.strActionInfo = xbmcgui.ControlLabel(0, 0, 300, 200, __settings__.getLocalizedString(15), 'font13', '0xFFFFFFFF')
 		self.addControl(self.strActionInfo)
 
 		self.choiceButton = list()
 		self.choiceID = list()
 
-		self.gather = xbmcgui.ControlButton(800, 50, 200, 100, "Next!")
+		self.gather = xbmcgui.ControlButton(800, 50, 200, 100, __settings__.getLocalizedString(16))
 		self.addControl(self.gather)
 
-		self.addChoice("Submit scraped movies", "movies")
-		self.addChoice("Submit scraped episodes", "episodes")
-		self.addChoice("Submit scraped music videos", "musicvideos")
+		self.addChoice(__settings__.getLocalizedString(17), "movies")
+		self.addChoice(__settings__.getLocalizedString(18), "episodes")
+		self.addChoice(__settings__.getLocalizedString(19), "musicvideos")
 
 		for source in getSources():
-			self.addChoice(u'Submit unscraped videos from "' + source["label"] + u'"', source["file"])
+			self.addChoice(__settings__.getLocalizedString(20) + '"' + source["label"] + u'"', source["file"])
 
 		self.setFocus(self.choiceButton[0])
 		self.gather.controlLeft(self.choiceButton[0])
@@ -174,7 +178,7 @@ class CheckServerState(object):
 			self.sm.switchTo(InitialWindow())
 		else:
 			dialog = xbmcgui.Dialog()
-			dialog.ok('Server down', "The statistics server seems to be down")
+			dialog.ok(__settings__.getLocalizedString(21), __settings__.getLocalizedString(22))
 
 	def close(self):
 		pass
