@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
-  id="statistics.gsoc.scraper"
+  id="script.statistics.gsoc.scraper"
   version="0.0.1"
   name="Statistics gathering for scraping GSoC 2012"
   provider-name="topfs2, Team XBMC">
