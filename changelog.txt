@@ -1,0 +1,8 @@
+[B]0.0.3[/B]
+- Fixed used script id
+
+[B]0.0.2[/B]
+- Added to XBMC Eden repo
+
+[B]0.0.1[/B]
+- Initial test version
